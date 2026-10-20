@@ -1,0 +1,35 @@
+{% extends "base.html" %}{% block title %}Dashboard · GreenSort AI{% endblock %}
+{% block head %}<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>{% endblock %}
+{% block content %}
+<section class="welcome-row"><div><div class="eyebrow"><span class="live-dot"></span> YOUR GREEN JOURNEY STARTS HERE</div><h1>Good day, {{ current_user['full_name'].split()[0] }} <span class="wave">✳</span></h1><p class="muted">Every item sorted right is a small win for the planet.</p></div><a class="btn btn-outline" href="{{ url_for('disposal_guide') }}">Explore disposal guide <span>↗</span></a></section>
+<section class="hero-banner"><div class="hero-copy"><span class="hero-label">YOUR DAILY ECO MOMENT</span><h2>Waste less.<br><em>Wonder more.</em></h2><p>Identify an item, find its right place, and turn everyday actions into a greener habit.</p><a class="btn btn-light" href="#identify">Identify waste <span>↓</span></a></div><div class="hero-art"><div class="sun"></div><div class="hill hill-back"></div><div class="hill hill-front"></div><div class="hero-plant">🌱</div><div class="floating-card"><span>✦</span><div><b>Small actions add up</b><small>Your next green choice starts now</small></div></div></div><div class="hero-index">01 <span>/ 03</span></div></section>
+<section class="stats-grid">
+<div class="stat-card"><span class="stat-icon mint">⌕</span><div><span class="stat-label">Items identified</span><strong>{{ count }}</strong><small>All your saved estimates</small></div><span class="stat-arrow">↗</span></div>
+<div class="stat-card"><span class="stat-icon peach">✦</span><div><span class="stat-label">Eco-points</span><strong>{{ point_total }}</strong><small>Earned through activity</small></div><span class="stat-arrow">↗</span></div>
+<div class="stat-card"><span class="stat-icon lilac">♧</span><div><span class="stat-label">Community</span><strong>{{ followers }}</strong><small>People following you</small></div><span class="stat-arrow">↗</span></div>
+</section>
+<section id="identify" class="section-block"><div class="section-heading"><div><div class="eyebrow">SMART WASTE IDENTIFICATION</div><h2>What are we sorting today?</h2><p class="muted">Choose a method to get a disposal suggestion.</p></div><span class="step-count">STEP 01 <span>OF 03</span></span></div>
+<div class="identify-grid">
+<div class="panel upload-panel"><div class="panel-icon">▧</div><h3>Upload or capture</h3><p class="muted">Upload a photo for local AI image analysis, or enter a description for a text-based estimate.</p>
+<form method="post" action="{{ url_for('identify') }}" enctype="multipart/form-data" class="form-stack" data-upload-form>
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label class="dropzone" for="waste-image"><span class="drop-icon">↑</span><b>Drop an image or browse</b><small>JPG, PNG, WEBP · Max 5 MB</small><input id="waste-image" type="file" name="image" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" capture="environment" data-image-input></label>
+<img class="image-preview hidden" alt="Selected waste preview" data-image-preview>
+<label>What is this item? <span class="optional">(recommended)</span><input name="description" maxlength="250" placeholder="e.g. empty plastic water bottle"></label>
+<div class="notice notice-info"><b>AI image analysis:</b> Uploaded photos are analyzed locally with a vision model. Results are estimates, so check the item and follow local disposal rules. The model downloads on first use.</div>
+<button class="btn btn-primary btn-wide" type="submit">Get disposal suggestion <span>→</span></button>
+</form></div>
+<div class="panel text-panel"><div class="panel-icon leaf-icon">✳</div><h3>Describe your waste</h3><p class="muted">Type an item name and get a likely category with practical next steps.</p>
+<form method="post" action="{{ url_for('identify') }}" class="form-stack">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label>Waste item description<textarea name="description" rows="3" required maxlength="250" placeholder="Tell us what you want to dispose of..."></textarea></label>
+<div class="example-chips"><button type="button" data-fill="plastic water bottle">Plastic bottle</button><button type="button" data-fill="banana peel">Banana peel</button><button type="button" data-fill="used battery">Used battery</button><button type="button" data-fill="cardboard box">Cardboard</button></div>
+<button class="btn btn-primary btn-wide" type="submit">Identify from text <span>→</span></button>
+</form>
+<div class="qr-box"><div class="qr-copy"><span class="qr-icon">▦</span><div><b>Have a GreenSort QR?</b><small>Scan a supported demo code with your camera.</small></div></div><button type="button" class="btn btn-outline btn-small" data-start-qr>Open scanner</button><div id="qr-reader" class="qr-reader hidden"></div><div id="qr-result" class="qr-result" aria-live="polite"></div></div>
+</div></div></section>
+<section class="section-block lower-grid"><div class="panel recent-panel"><div class="panel-title-row"><div><div class="eyebrow">YOUR LATEST ACTIVITY</div><h2>Recently identified</h2></div><a class="text-link" href="{{ url_for('history') }}">View all →</a></div>
+{% if recent %}<div class="recent-list">{% for r in recent %}<a class="recent-item" href="{{ url_for('result',record_id=r['id']) }}"><span class="category-symbol">{{ '♻' if r['waste_key'] in ['plastic','paper','glass','metal'] else '✿' }}</span><span class="recent-desc"><b>{{ r['description'] }}</b><small>{{ r['category'] }} · {{ r['created_at'][:16].replace('T',' ') }}</small></span><span class="recent-arrow">↗</span></a>{% endfor %}</div>{% else %}<div class="empty-state"><span>✳</span><b>Your green story starts here</b><p>Identify your first item and it will show up here.</p></div>{% endif %}</div>
+<div class="panel quick-guide"><div class="eyebrow">QUICK REMINDER</div><h2>Sort with confidence.</h2><p class="muted">A few simple steps make recycling more effective.</p><div class="guide-step"><span>01</span><div><b>Keep it clean</b><small>Empty and rinse containers when appropriate.</small></div></div><div class="guide-step"><span>02</span><div><b>Keep it separate</b><small>Dry recyclables work best clean and dry.</small></div></div><div class="guide-step"><span>03</span><div><b>Check local rules</b><small>Collection systems vary by location.</small></div></div><a class="btn btn-soft btn-wide" href="{{ url_for('disposal_guide') }}">See all disposal tips →</a></div></section>
+<section class="tutorial-strip"><div class="tutorial-icon">✦</div><div><b>New around here?</b><p>Register, identify waste, review the suggestion, follow local rules, and track your progress.</p></div><a href="{{ url_for('rewards') }}" class="text-link">Explore rewards ↗</a></section>
+{% endblock %}

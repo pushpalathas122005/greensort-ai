@@ -1,0 +1,22 @@
+{% extends "base.html" %}{% block title %}{{ 'Create account' if mode=='register' else 'Welcome back' }} · GreenSort AI{% endblock %}
+{% block content %}
+<section class="auth-layout">
+<div class="auth-art">
+<div class="eyebrow"><span class="live-dot"></span> YOUR EVERYDAY ECO COMPANION</div>
+<h1>Little choices.<br><em>Lasting change.</em></h1>
+<p>Know what goes where. Make better habits stick. Help build a cleaner community, one item at a time.</p>
+<div class="planet-illustration"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="planet">🌎</div><span class="float-leaf leaf-a">✿</span><span class="float-leaf leaf-b">♻</span><span class="float-leaf leaf-c">✦</span></div>
+<div class="art-caption"><span>01 / IDENTIFY</span><span>02 / SORT RIGHT</span><span>03 / MAKE AN IMPACT</span></div>
+</div>
+<div class="auth-form-wrap"><div class="form-kicker">WELCOME TO GREENSORT</div><h2>{{ 'Create your account' if mode=='register' else 'Welcome back' }}</h2><p class="muted">{{ 'Start your greener journey today.' if mode=='register' else 'Sign in to continue your eco journey.' }}</p>
+<form method="post" class="form-stack">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+{% if mode=='register' %}<label>Full name<input name="full_name" autocomplete="name" required minlength="2" maxlength="80" placeholder="e.g. Asha Kumar"></label>{% endif %}
+<label>Email address<input type="email" name="email" autocomplete="email" required placeholder="you@example.com"></label>
+<label>Password<input type="password" name="password" autocomplete="{{ 'new-password' if mode=='register' else 'current-password' }}" required minlength="{{ 8 if mode=='register' else 1 }}" placeholder="{{ 'At least 8 characters' if mode=='register' else 'Enter your password' }}"></label>
+{% if mode=='register' %}<label>Confirm password<input type="password" name="confirm_password" autocomplete="new-password" required minlength="8" placeholder="Type your password again"></label>{% endif %}
+<button class="btn btn-primary btn-wide" type="submit">{{ 'Create account' if mode=='register' else 'Sign in to dashboard' }} <span>→</span></button>
+</form><p class="auth-switch">{{ 'Already have an account?' if mode=='register' else "New to GreenSort AI?" }} <a href="{{ url_for('login' if mode=='register' else 'register') }}">{{ 'Log in' if mode=='register' else 'Create an account' }}</a></p>
+<div class="secure-note">⌑ Your account is protected with password hashing and secure form tokens.</div>
+</div></section>
+{% endblock %}

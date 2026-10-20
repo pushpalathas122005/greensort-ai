@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="{{ lang or 'en' }}">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>{% block title %}GreenSort AI{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<script defer src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% block head %}{% endblock %}
+</head>
+<body>
+<div class="app-shell">
+<header class="topbar">
+<a class="brand" href="{{ url_for('home') }}"><span class="brand-mark">✳</span><span>GreenSort<span class="brand-ai"> AI</span><small>SMALL STEPS. GREENER PLANET.</small></span></a>
+{% if current_user %}
+<button class="mobile-menu" type="button" aria-label="Toggle navigation" data-menu-toggle>☰</button>
+<nav class="nav-links" data-nav>
+<a href="{{ url_for('home') }}">Dashboard</a><a href="{{ url_for('disposal_guide') }}">Disposal guide</a><a href="{{ url_for('history') }}">My activity</a><a href="{{ url_for('community') }}">Community</a>
+</nav>
+<div class="top-actions"><span class="points-pill">✦ {{ point_total }} pts</span><a class="avatar-link" href="{{ url_for('profile') }}" title="Your profile">{{ current_user['full_name'][0]|upper }}</a></div>
+{% else %}<a class="btn btn-primary btn-small" href="{{ url_for('login') }}">Log in <span>↗</span></a>{% endif %}
+</header>
+<main class="main-content">
+{% with messages=get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flash-stack">{% for category,message in messages %}<div class="flash flash-{{ category }}" role="status">{{ message }}<button type="button" aria-label="Dismiss message" data-dismiss>×</button></div>{% endfor %}</div>{% endif %}{% endwith %}
+{% block content %}{% endblock %}
+</main>
+<footer class="footer"><span>✳ GreenSort AI</span><span>Sort thoughtfully. Live sustainably.</span><a href="{{ url_for('disposal_guide') if current_user else url_for('login') }}">Responsible disposal guide</a></footer>
+</div>
+</body>
+</html>
